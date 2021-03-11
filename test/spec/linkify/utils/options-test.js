@@ -81,6 +81,8 @@ describe('linkify/utils/options', () => {
 				expect(opts.resolve(urlToken)).to.deep.equal({
 					formatted: '<github.com>',
 					formattedHref: 'https://github.com/?from=linkify',
+					prefix: null,
+  					postfix: null,
 					tagName: 'a',
 					className: 'custom-class-name',
 					target: '_blank',
@@ -94,6 +96,8 @@ describe('linkify/utils/options', () => {
 				expect(opts.resolve(emailToken)).to.deep.equal({
 					formatted: '<test@example.com>',
 					formattedHref: 'mailto:test@example.com?subject=Hello+from+Linkify',
+					prefix: null,
+  					postfix: null,
 					tagName: 'a',
 					className: 'custom-class-name',
 					target: null,
