@@ -8,6 +8,7 @@ var defaults = {
 	target: typeToTarget,
 	validate: true,
 	ignoreTags: [],
+	ignoreElementClasses: [],
 	attributes: null,
 	className: 'linkified', // Deprecated value - no default class will be provided in the future
 	truncate: 0
@@ -28,6 +29,7 @@ function Options(opts) {
 	this.validate = opts.hasOwnProperty('validate') ? opts.validate : defaults.validate;
 	this.truncate = opts.hasOwnProperty('truncate') ? opts.truncate : defaults.truncate;
 	this.ignoreTags = [];
+	this.ignoreElementClasses = [];
 
 	// linkAttributes and linkClass is deprecated
 	this.attributes = opts.attributes || opts.linkAttributes || defaults.attributes;
@@ -39,6 +41,11 @@ function Options(opts) {
 	let ignoredTags = opts.hasOwnProperty('ignoreTags') ? opts.ignoreTags : defaults.ignoreTags;
 	for (var i = 0; i < ignoredTags.length; i++) {
 		this.ignoreTags.push(ignoredTags[i].toUpperCase());
+	}
+	// Make all classe names lower case
+	let ignoredElementClasses = opts.hasOwnProperty('ignoreElementClasses') ? opts.ignoreElementClasses : defaults.ignoreElementClasses;
+	for (var i = 0; i < ignoredElementClasses.length; i++) {
+		this.ignoreElementClasses.push(ignoredElementClasses[i].toLowerCase());
 	}
 }
 
