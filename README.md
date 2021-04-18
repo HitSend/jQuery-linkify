@@ -5,7 +5,7 @@
 [![Sauce Test Status](https://saucelabs.com/buildstatus/nfrasser)](https://saucelabs.com/u/nfrasser)
 [![Coverage Status](https://coveralls.io/repos/SoapBox/linkifyjs/badge.svg?branch=master)](https://coveralls.io/r/SoapBox/linkifyjs?branch=master)
 
-[![Build Status](https://saucelabs.com/open_sauce/build_matrix/nfrasser.svg)](https://saucelabs.com/beta/builds/c63720f642964f77927b2fda198b4a94)
+[![Sauce Test Status](https://app.saucelabs.com/browser-matrix/nfrasser.svg)](https://app.saucelabs.com/u/nfrasser)
 
 Linkify is a small yet comprehensive JavaScript plugin for finding URLs in plain-text and converting them to HTML links. It works with all valid URLs and email addresses.
 
@@ -32,10 +32,11 @@ __Jump to__
 
 * **Accuracy**<br>Linkify uses a (close to) complete list of valid top-level domains to ensure that only valid URLs and email addresses are matched.
 * **Speed**<br>Each string is analyzed exactly once to detect every kind of linkable entity
+* **Internationalization**<br>Linkify detects Internationalized Domains, hashtags and more in any language
 * **Extensibility**<br>Linkify is designed to be fast and lightweight, but comes with a powerful plugin API that lets you detect even more information like #hashtags and @mentions.
-* **Small footprint**<br>Linkify and its jQuery interface clock in at approximately 15KB minified (5KB gzipped) - approximately 50% the size of Twitter Text
-* **Modern implementation**<br>Linkify is written in ECMAScript6 and compiles to ES5 for modern JavaScript runtimes.
-  * Linkify is compatible with all modern browsers, as well as Internet Explorer 9 and up.
+* **Small footprint**<br>Linkify and its string element interface clock in at approximately 30KB minified (15KB gzipped)
+* **Modern implementation**<br>Linkify is written in ECMAScript 2015+ and compiles to ES5 for modern JavaScript runtimes.
+  * Linkify is compatible with all modern browsers, as well as Internet Explorer 11 and up.
 
 ## Demo
 [Launch demo](http://soapbox.github.io/linkifyjs/)
@@ -47,7 +48,7 @@ __Jump to__
 Download the [latest release](https://github.com/SoapBox/linkifyjs/releases), or install via [NPM](https://www.npmjs.com/)
 
 ```
-npm install linkifyjs
+npm install --save linkifyjs
 ```
 
 or [Yarn](https://yarnpkg.com/)
@@ -56,31 +57,27 @@ or [Yarn](https://yarnpkg.com/)
 yarn add linkifyjs
 ```
 
-or [Bower](http://bower.io/)
-
-```
-bower install linkifyjs
-```
-
 ### Quick Start
 
-Add [linkify](https://github.com/nfrasser/linkify-shim/raw/master/linkify.min.js) and [linkify-jquery](https://github.com/nfrasser/linkify-shim/raw/master/linkify-jquery.min.js) to your HTML following jQuery:
+Add [linkify](https://github.com/nfrasser/linkify-shim/raw/master/linkify.min.js) and [linkify-element](https://github.com/nfrasser/linkify-shim/raw/master/linkify-element.min.js) to your HTML following jQuery:
 
 ```html
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="linkify.min.js"></script>
-<script src="linkify-jquery.min.js"></script>
+<script src="linkify-element.min.js"></script>
 ```
-
-**Note:** A [polyfill](#browser-support) is required for Internet Explorer 8.
 
 #### Find all links and convert them to anchor tags
 
 ```js
-$('p').linkify();
-$('#sidebar').linkify({
-    target: "_blank"
-});
+// Linkify single element
+linkifyElement(document.getElementById('content'));
+
+// Linkify all paragraphs
+for (const element of document.querySelectorAll('p')) {
+  linkifyElement(element);
+}
+
 ```
 
 #### Find all links in the given string
@@ -108,16 +105,23 @@ Returns the following array
 
 See [all available options](http://soapbox.github.io/linkifyjs/docs/options.html)
 
-
-### Node.js/Browserify
+### ES Modules
 
 ```js
-var linkify = require('linkifyjs');
-require('linkifyjs/plugins/hashtag')(linkify); // optional
-var linkifyHtml = require('linkifyjs/html');
+import * as linkify from 'linkifyjs';
+import 'linkifyjs/plugins/hashtag'; // optional
+import linkifyHtml from 'linkifyjs/html';
 ```
 
-#### Example string usage
+### Node.js / CommonJS modules
+
+```js
+const linkify = require('linkifyjs');
+require('linkifyjs/plugins/hashtag'); // optional
+const linkifyHtml = require('linkifyjs/html');
+```
+
+### Example string usage
 
 ```js
 linkifyHtml('The site github.com is #awesome.', {
@@ -129,34 +133,6 @@ Returns the following string
 
 ```js
 'The site <a href="https://github.com">github.com</a> is <a href="#awesome">#awesome</a>.'
-```
-
-### AMD
-
-```html
-<script src="r.js"></script>
-<script src="linkify.amd.js"></script>
-<script src="linkify-plugin-hashtag.amd.js"></script> <!-- optional -->
-<script src="linkify-element.amd.js"></script>
-```
-
-```js
-require(['linkify'], function (linkify) {
-  linkify.test('github.com'); // true
-  linkify.test('github.com', 'email'); // false
-});
-
-require(['linkify-element'], function (linkifyElement) {
-
-  // Linkify the #sidebar element
-  linkifyElement(document.getElementById('sidebar'), {
-    className: 'my-link'
-  });
-
-  // Linkify all paragraph tags
-  document.getElementsByTagName('p').map(linkifyElement);
-});
-
 ```
 
 Note that if you are using `linkify-jquery.amd.js`, a `jquery` module must be defined.
@@ -183,29 +159,15 @@ ReactDOM.render(
 
 ## Browser Support
 
-Linkify works on all modern browsers.
-
-Linkify natively supports Internet Explorer 9 and above. Internet Explorer 8 is unofficially supported with a polyfill.
-
-You can use either [es5-shim](https://github.com/es-shims/es5-shim) (sham also required) or the provided `linkify-polyfill.js`:
-
-```html
-<script src="jquery.js"></script>
-
-<!--[if IE 8]>
-<script src="linkify-polyfill.js"></script>
-<![endif]-->
-<script src="linkify.js"></script>
-<script src="linkify-jquery.js"></script>
-```
+Linkify works on all modern browsers and Internet Explorer 11.
 
 ## Node.js Support
 
-Linkify is tested on Node.js 8 and up. Older versions are unofficially supported.
+Linkify is tested on Node.js 10 and up. Older versions are unofficially supported.
 
 ## Downloads
 
-Download the [**latest release**](https://github.com/SoapBox/linkifyjs/releases) or clone the [**build repository**](https://github.com/nfrasser/linkify-shim).
+Download the [**latest release**](https://github.com/SoapBox/linkifyjs/releases)
 
 **[linkify](http://soapbox.github.io/linkifyjs/docs/linkify.html)** _(required)_<br> [`.min.js`](https://github.com/nfrasser/linkify-shim/raw/master/linkify.min.js) · [`.js`](https://github.com/nfrasser/linkify-shim/raw/master/linkify.js) · [`.amd.min.js`](https://github.com/nfrasser/linkify-shim/raw/master/linkify.amd.min.js) · [`.amd.js`](https://github.com/nfrasser/linkify-shim/raw/master/linkify.amd.js)
 
@@ -235,7 +197,6 @@ Here are a few of the known issues.
 * Non-standard email local parts delimited by " (quote characters)
   * Emails with quotes in the localpart are detected correctly, unless the quotes contain certain characters like `@`.
 * Slash characters in email addresses
-* Non-latin domains or TLDs are not supported (support may be added via plugin in the future)
 
 ## Contributing
 
